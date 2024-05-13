@@ -16,19 +16,23 @@ on:
 
 jobs:
   auto_change_base_branch:
-    if: github.event.pull_request.base.ref == 'transifex-synchronization-source'
+    if: ${{ github.base_ref == 'transifex-synchronization-source' }}
     runs-on: ubuntu-latest
 
     steps:
+    - name: Setup Git User
+      run: |
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config user.name "github-actions[bot]"
+
     - name: Checkout base branch
       uses: actions/checkout@v4
       with:
         ref: 'refs/heads/master'
 
-    - name: Setup Git User
+    - name: Pull latest changes from base branch
       run: |
-        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config user.name "github-actions[bot]"
+        git pull origin transifex-synchronization-source
       
     - name: Change base branch
       run: |

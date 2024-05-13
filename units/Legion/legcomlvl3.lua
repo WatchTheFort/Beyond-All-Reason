@@ -1,3 +1,4 @@
+
 return {
 	legcomlvl3 = {
 		maxacc = 0.18,
@@ -70,9 +71,9 @@ return {
 			[8] = "legvp",
 			[9] = "legap",
 			[10] = "coreyes",
-			[11] = "corrad",
+			[11] = "legrad",
 			[12] = "legdrag",
-			[13] = "corllt",
+			[13] = "leglht",
 			[14] = "corrl",
 			[15] = "cordl",
 			[16] = "cortide",
@@ -92,7 +93,7 @@ return {
 			[29] = "leggob",
 			--[29] = "armclaw",
 			--[30] = "armferret",
-			--[31] = "corjamt",
+			--[31] = "legjam",
 		},
 		customparams = {
 			unitgroup = 'builder',
@@ -243,7 +244,7 @@ return {
 				name = "Level1TorpedoLauncher",
 				noselfdamage = true,
 				predictboost = 1,
-				range = 400,
+				range = 500,
 				reloadtime = 1.2,
 				soundhit = "xplodep2",
 				soundstart = "torpedo1",
@@ -255,7 +256,7 @@ return {
 				weaponacceleration = 50,
 				weapontimer = 3,
 				weapontype = "TorpedoLauncher",
-				weaponvelocity = 200,
+				weaponvelocity = 425,
 				damage = {
 					default = 250,
 					subs = 125,

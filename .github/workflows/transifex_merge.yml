@@ -8,7 +8,7 @@
 # Since transifex-synchronization-source is just a staging branch to
 # control updates to Transifex, it is never merged to master, so we
 # need to change the merge target of Transifex's pull requests to master
-name: Merge translations to master
+name: Translations set merge target to master
 
 on:
   pull_request:
@@ -16,20 +16,22 @@ on:
 
 jobs:
   auto_change_base_branch:
-    if: github.event.pull_request.base.ref == 'transifex-synchronization-source'
+    if: ${{ github.base_ref == 'transifex-synchronization-source' }}
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout base branch
-      uses: actions/checkout@v4
-      with:
-        ref: 'refs/heads/master'
-
     - name: Setup Git User
       run: |
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config user.name "github-actions[bot]"
-      
-    - name: Change base branch
+
+    - name: Change base branch of pull request
       run: |
-        git push origin HEAD:${{ github.event.pull_request.base.ref }}
+        TOKEN="${{ secrets.GITHUB_TOKEN }}"
+        PR_NUMBER="${{ github.event.number }}"
+        NEW_BASE_BRANCH="master"
+
+        URL="https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUMBER}"
+        DATA="{\"base\":\"${NEW_BASE_BRANCH}\"}"
+
+        curl -X PATCH -H "Authorization: token $TOKEN" -H "Accept: application/vnd.github.v3+json" -d "$DATA" "$URL"

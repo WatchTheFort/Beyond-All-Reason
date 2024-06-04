@@ -6,7 +6,7 @@ function gadget:GetInfo()
 		date = "May 2024",
 		license = "Public domain",
 		layer = 0,
-		enabled = true
+		enabled = false
 	}
 end
 
@@ -61,7 +61,7 @@ end
 local initializeList = {}
 local ignoreList = {}
 function gadget:UnitCreated(unitID, unitDefID, unitTeam, builderID)
-	if  builderID and mobileUnits[Spring.GetUnitDefID(unitID)] and string.find(parentsInheritXP[Spring.GetUnitDefID(builderID)], "MOBILEBUILT") then -- only mobile combat units will pass xp 
+	if  builderID and mobileUnits[Spring.GetUnitDefID(unitID)] and string.find(parentsInheritXP[Spring.GetUnitDefID(builderID)], "MOBILEBUILT") then -- only mobile combat units will pass xp
 			childrenWithParents[unitID] = {
 				unitid=unitID,
 				parentunitid=builderID,
@@ -90,7 +90,8 @@ function gadget:GameFrame(frame)
 					local parentDefID
 					if Spring.GetUnitRulesParam(unitID, "carrier_host_unit_id") then --estabalishes unit_carrier_spawner parenthood
 						parentID = Spring.GetUnitRulesParam(unitID, "carrier_host_unit_id")
-						if string.find(parentsInheritXP[Spring.GetUnitDefID(parentID)], "DRONE") then
+						parentDefID = Spring.GetUnitDefID(parentID)
+						if parentsInheritXP[parentDefID] ~= nil and string.find(parentsInheritXP[parentDefID], "DRONE") then
 							childrenWithParents[unitID] = {
 								unitid = unitID,
 								parentunitid = parentID,
@@ -102,7 +103,8 @@ function gadget:GameFrame(frame)
 					end
 					if Spring.GetUnitRulesParam(unitID, "parent_unit_id") then --estabalishes unit_explosion_spawner parenthood
 						parentID = Spring.GetUnitRulesParam(unitID, "parent_unit_id")
-						if string.find(parentsInheritXP[Spring.GetUnitDefID(parentID)], "BOTCANNON") then
+						parentDefID = Spring.GetUnitDefID(parentID)
+						if parentsInheritXP[parentDefID] ~= nil and string.find(parentsInheritXP[parentDefID], "BOTCANNON") then
 							childrenWithParents[unitID] = {
 								unitid = unitID,
 								parentunitid = parentID,
@@ -148,7 +150,7 @@ function gadget:GameFrame(frame)
 end
 
 function gadget:UnitDestroyed(unitID, unitDefID, unitTeam, attackerID, attackerDefID, attackerTeam)
-	
+
 	childrenWithParents[unitID] = nil --removes units from lists when destroyed
 	ignoreList[unitID] = nil
 	initializeList[unitID] = nil

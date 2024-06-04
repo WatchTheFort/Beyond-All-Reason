@@ -737,7 +737,7 @@ local options = {
         name	= "Spawner Placement",
         desc	= "Control where spawners appear",
         type	= "list",
-        def		= "initialbox",
+        def		= "avoid",
         section	= "scav_defense_options",
         items	= {
             { key = "avoid", 		name = "Avoid Players", 	desc="Burrows avoid player units" },
@@ -801,6 +801,7 @@ local options = {
         max		= 3,
         step	= 0.1,
         section	= "scav_defense_options",
+        hidden  = true,
     },
 
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -850,22 +851,23 @@ local options = {
     {
         key     = "draft_mode",
         name    = "Draft Spawn Order mod",
-        desc    = "Random/Skill/Fair based startPosType mods. Default: Disabled.",
+        desc    = "Random/Captain/Skill/Fair based startPosType mods. Default: Random.",
         type    = "list",
         section = "options_extra",
-        def     = "disabled",
+        def     = "random",
         items 	= {
-            { key = "disabled", name = "Disabled",  desc = "No changes." },
-            { key = "random",   name = "Random",    desc = "Players get to pick a start position with a delay in a random order." },
-            { key = "skill",    name = "Skill",     desc = "Skill-based order, instead of random." },
-            { key = "fair",     name = "Fair",      desc = "Everyone must join the game first - after that (+2sec delay) everyone can place." }
+            { key = "disabled", name = "Disabled",                      desc = "Disable draft mod. Fast-PC place first." },
+            { key = "random",   name = "Random Order",                  desc = "Players get to pick a start position with a delay in a random order." },
+            { key = "captain",  name = "Captains First",                desc = "Captain picks first, then everyone else in a random order." },
+            { key = "skill",    name = "Skill Order",                   desc = "Skill-based order, instead of random." },
+            { key = "fair",     name = "After full team has loaded",    desc = "Everyone must join the game first - after that (+2sec delay) everyone can place." }
         },
     },
   
     {
         key 	= "unit_market",
         name 	= "Unit Market",
-        desc 	= "Allow players to trade units. (Select unit, press 'Sell Unit' or say /sell_unit in chat to mark the unit for sale. Hold ALT and double-click to buy from allies.)",
+        desc 	= "Allow players to trade units. (Select unit, press 'For Sale' in order window or say /sell_unit in chat to mark the unit for sale. Double-click to buy from allies. T2cons show up in shop window!)",
         type   	= "bool",
         def    	= false,
         section = "options_extra",
@@ -958,7 +960,7 @@ local options = {
         key    	= "ruins_only_t1",
         name   	= "Ruins: Only T1",
         type   	= "bool",
-        def    	= true,
+        def    	= false,
         hidden 	= true,
         section	= "options_extra",
     },
@@ -1198,6 +1200,15 @@ local options = {
         key 	= "proposed_unit_reworks",
         name 	= "Proposed Unit Reworks",
         desc 	= "Whistler and Lasher reworked to switch between longer range tracking aa missiles and non-tracking ground missiles.  The AA missiles have 650 range and a faster projectile.  The ground missiles move slower than before and have +20% dps to make up for the removed tracking.",
+        type 	= "bool",
+        section = "options_experimental",
+        def 	= false,
+    },
+
+    {
+        key 	= "energy_share_rework",
+        name 	= "Energy Share Rework",
+        desc 	= "Additional energy overflow/underflow mechanics. 10% of the energy income is re-distributed to prevent E-stalling.",
         type 	= "bool",
         section = "options_experimental",
         def 	= false,

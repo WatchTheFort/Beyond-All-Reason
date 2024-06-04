@@ -2813,10 +2813,14 @@ GUIUnitSoundEffects = {
 	scavtacnukespawner = {},
 	lootdroppod_gold = {},
 	lootdroppod_printer = {},
-	scavengerdroppod = {},
+	scavbeacon_t1 = {},
+	scavbeacon_t2 = {},
+	scavbeacon_t3 = {},
+	scavbeacon_t4 = {},
 	scavengerdroppodfriendly = {},
-	scavempspawner = {},
-	scavtacnukespawner = {},
+	scavmist = {},
+	scavmistxl = {},
+	scavmistxxl = {},
 
 
 	lootboxbronze		= LootboxSoundEffects,

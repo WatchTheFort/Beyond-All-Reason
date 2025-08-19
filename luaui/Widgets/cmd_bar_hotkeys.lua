@@ -1,3 +1,5 @@
+local widget = widget ---@type Widget
+
 function widget:GetInfo()
 	return {
 		name = "BAR Hotkeys",
@@ -7,7 +9,6 @@ function widget:GetInfo()
 		license = "GNU GPL, v2 or later",
 		layer = -99999, -- run before gui_options, so that we can appropriately transform stuff here when keybind changes happen
 		enabled = true,
-		handler = true,
 	}
 end
 
@@ -17,7 +18,7 @@ local keyConfig = VFS.Include("luaui/configs/keyboard_layouts.lua")
 
 
 local function reloadWidgetsBindings()
-	local reloadableWidgets = {'buildmenu', 'ordermenu', 'keybinds'}
+	local reloadableWidgets = {'buildmenu', 'ordermenu', 'keybinds', 'cmd_blueprint'}
 
 	for _, w in pairs(reloadableWidgets) do
 		if WG[w] and WG[w].reloadBindings then

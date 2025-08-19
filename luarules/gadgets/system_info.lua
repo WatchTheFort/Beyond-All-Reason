@@ -1,4 +1,6 @@
 
+local gadget = gadget ---@type Gadget
+
 function gadget:GetInfo()
 	return {
 		name	= "System info",
@@ -42,8 +44,9 @@ else
 	local validation = SYNCED.validationSys
 
 	local myPlayerID = Spring.GetMyPlayerID()
-	local myPlayerName = Spring.GetPlayerInfo(myPlayerID,false)
-	local authorized = SYNCED.permissions.sysinfo[myPlayerName]
+	local myPlayerName,_,_,_,_,_,_,_,_,_,accountInfo = Spring.GetPlayerInfo(myPlayerID)
+	local accountID = (accountInfo and accountInfo.accountid) and tonumber(accountInfo.accountid) or -1
+	local authorized = SYNCED.permissions.sysinfo[accountID]
 
 	local function handleSystemEvent(_,playerID,system)
 		if authorized then
@@ -69,6 +72,13 @@ else
 
 	function gadget:Initialize()
 		gadgetHandler:AddSyncAction("systemBroadcast", handleSystemEvent)
+		Spring.Echo(string.format("infologVersionTags:engine=%s,game=%s,lobby=%s,map=%s",
+			Engine.version or "",
+			(Game.gameName or "") .. " " .. (Game.gameVersion or ""),
+			(VFS and VFS.GetNameFromRapidTag and VFS.GetNameFromRapidTag("byar-chobby:test") or ""),
+			Game.mapName or ""
+		))
+
 		local myvalidation = validation
 
 		local s_cpu, s_gpu, s_gpuVram, s_ram, s_os, s_resolution, s_displaymode, s_displays, s_config, s_configs_os, s_cpuCoresLogical, s_cpuCoresPhysical, ds, nl, configEnd
@@ -91,8 +101,8 @@ else
 					s_os = s_os .. ' ' .. Platform.osVersion
 				end
 			end
-			
-			if Platform.hwConfig ~= nil then 
+
+			if Platform.hwConfig ~= nil then
 				s_cpu = string.match(Platform.hwConfig, '([%+a-zA-Z0-9 ()@._-]*)')
 				s_cpu = string.gsub(s_cpu, " Processor", "")
 				s_cpu = string.gsub(s_cpu, " Eight[-]Core", "")
@@ -109,8 +119,8 @@ else
 				local maxheight = 0
 				local maxwidth = 0
 				for i, mode in pairs(Platform.availableVideoModes) do
-					if mode.h > maxheight then maxheight = mode.h end 
-					if mode.w > maxwidth then maxwidth = mode.h end 
+					if mode.h > maxheight then maxheight = mode.h end
+					if mode.w > maxwidth then maxwidth = mode.h end
 				end
 				s_resolution = tostring(maxwidth) .. 'x' .. tostring(maxheight)
 			end
@@ -244,10 +254,17 @@ else
 	function gadget:MapDrawCmd(playerID, cmdType, px, py, pz, labelText)
 		if playerID == myPlayerID and cmdType == 'point' and string.len(labelText) > 2 then
 			local msg = string.format("m@pm@rk%s:%d:%d:%d:%d:%s:%s",
-				validation, 
-				Spring.GetGameFrame(), 
-				playerID, px, pz, 
+				validation,
+				Spring.GetGameFrame(),
+				playerID, px, pz,
 				myPlayerName, labelText)
+			SendLuaRulesMsg(msg)
+		end
+	end
+
+	function gadget:GamePaused(playerID, isPaused)
+		if playerID == myPlayerID then
+			local msg = string.format("p@u$3:%s", tostring(isPaused))
 			SendLuaRulesMsg(msg)
 		end
 	end

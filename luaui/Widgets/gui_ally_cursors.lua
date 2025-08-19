@@ -1,3 +1,5 @@
+local widget = widget ---@type Widget
+
 function widget:GetInfo()
 	return {
 		name = "AllyCursors",
@@ -40,6 +42,7 @@ local idleCursorTime = 25        -- fade time cursor (specs only)
 local addLights = true
 local lightRadiusMult = 0.5
 local lightStrengthMult = 0.85
+local lightSelfShadowing = false
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -224,7 +227,7 @@ end
 
 
 function widget:ViewResize()
-	font = WG['fonts'].getFont(nil, 1, 0.2, 1.3)
+	font = WG['fonts'].getFont(1, 1.5)
 	deleteDlists()
 end
 
@@ -275,8 +278,21 @@ function widget:Initialize()
 			functionID = WG.DeferredLighting_RegisterFunction(GetLights)
 		end
 	end
+	WG['allycursors'].setLightSelfShadowing = function(value)
+		lightSelfShadowing = value
+		if functionID and WG.DeferredLighting_UnRegisterFunction then
+			WG.DeferredLighting_UnRegisterFunction(functionID)
+		end
+		if WG.DeferredLighting_RegisterFunction then
+			functionID = WG.DeferredLighting_RegisterFunction(GetLights)
+		end
+	end
 	WG['allycursors'].getLightRadius = function()
 		return lightRadiusMult
+	end
+
+	WG['allycursors'].getLightSelfShadowing = function()
+		return lightSelfShadowing
 	end
 	WG['allycursors'].setCursorDot = function(value)
 		showCursorDot = value
@@ -330,6 +346,12 @@ function widget:PlayerChanged(playerID)
 	local r, g, b = spGetTeamColor(teamID)
 	if isSpec then
 		teamColors[playerID] = { 1, 1, 1, 0.6 }
+		if cursors[playerID] then
+			if not showSpectatorName then
+				cursors[playerID][7] = 0
+			end
+			cursors[playerID][8] = true
+		end
 	elseif r and g and b then
 		teamColors[playerID] = { r, g, b, 0.75 }
 	end
@@ -339,7 +361,6 @@ function widget:PlayerChanged(playerID)
 		end
 		allycursorDrawList[playerID] = nil
 	end
-
 	-- update speclist when player becomes spectator
 	--if isSpec and not specList[playerID] then
 		updateSpecList()
@@ -367,6 +388,7 @@ end
 
 local function createCursorDrawList(playerID, opacityMultiplier)
 	local name, _, spec, teamID = spGetPlayerInfo(playerID, false)
+	name = ((WG.playernames and WG.playernames.getPlayername) and WG.playernames.getPlayername(playerID)) or name
 	local r, g, b = spGetTeamColor(teamID)
 	local wx, wy, wz = 0, 0, 0
 	local quadSize = usedCursorSize
